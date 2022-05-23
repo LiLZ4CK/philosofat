@@ -9,6 +9,7 @@ RM = @rm -f
 SRC := philo.c \
 		tools.c \
 		tools2.c \
+		tools3.c \
 
 
 SRCO = $(subst .c,.o,$(SRC))
