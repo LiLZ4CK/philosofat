@@ -6,7 +6,7 @@
 /*   By: zwalad <zwalad@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 03:00:36 by zwalad            #+#    #+#             */
-/*   Updated: 2022/05/23 04:48:47 by zwalad           ###   ########.fr       */
+/*   Updated: 2022/05/24 04:16:15 by zwalad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ t_philo	*philo_init(t_philo *p, int ac, char **av, int i)
 		p->data[i].go_away = 1;
 		if (ac == 6)
 			p->data[i].mu_ea = ft_atoi(av[5]);
+		if (ac == 5)
+			p->data[i].mu_ea = -1;
 		i++;
 	}
 	pthread_mutex_init(&p->write, NULL);
@@ -47,17 +49,23 @@ int	mutex_locker(t_data *p, int i)
 		p->l_ea = g_time() - p->philo->start;
 		pthread_mutex_unlock(&p->philo->incr);
 	}
-	if (i == 0)
+	if (i == 0 || i == 1)
 	{
-		pthread_mutex_lock(&p->philo->incr);
-		p->mo_ea = 0;
-		pthread_mutex_unlock(&p->philo->incr);
+		pthread_mutex_lock(&p->philo->incr2);
+		p->mo_ea = i;
+		pthread_mutex_unlock(&p->philo->incr2);
 	}
-	if (i == 1)
+	if (i == 10 || i == 11)
 	{
-		pthread_mutex_lock(&p->philo->incr);
-		p->mo_ea = 1;
-		pthread_mutex_unlock(&p->philo->incr);
+		pthread_mutex_lock(&p->philo->clean);
+		if (p->philo->n == 0 && i == 10)
+		{
+			pthread_mutex_unlock(&p->philo->clean);
+			return (0);
+		}
+		if (i == 11)
+			p->philo->n = 0;
+		pthread_mutex_unlock(&p->philo->clean);
 	}
 	return (1);
 }

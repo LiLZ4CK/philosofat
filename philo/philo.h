@@ -6,7 +6,7 @@
 /*   By: zwalad <zwalad@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 15:42:22 by zwalad            #+#    #+#             */
-/*   Updated: 2022/05/23 17:10:47 by zwalad           ###   ########.fr       */
+/*   Updated: 2022/05/24 03:20:56 by zwalad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,11 +62,11 @@ t_philo		*philo_init(t_philo *p, int ac, char **av, int i);
 long long	g_time(void);
 void		uusleep(long long i);
 int			ft_atoi(char *str);
-void		*watcher(t_philo *p);
-int			waiter(t_philo	*p);
+int			watcher(t_philo *p);
+void		*waiter(t_philo *q);
 void		the_free(t_philo *p);
 int			checkerrrrr(int ac, t_philo *p);
-t_philo		*atoi_init(t_philo *p, char **av, int ac);
+int			atoi_init(t_philo *p, char **av, int ac);
 int			mutex_locker(t_data *p, int i);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: zwalad <zwalad@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/15 23:19:56 by zwalad            #+#    #+#             */
-/*   Updated: 2022/05/23 17:13:26 by zwalad           ###   ########.fr       */
+/*   Updated: 2022/05/24 02:40:35 by zwalad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void	print_out(t_data *p, char *str)
 	pthread_mutex_lock(&p->philo->write);
 	printf("%lld ms %d %s\n", g_time() - p->philo->start, p->id, str);
 	pthread_mutex_unlock(&p->philo->write);
-	if ((ft_strncmp(str, "is eating", 9) == 0) && p->philo->ac == 6)
+	if ((ft_strncmp(str, "is eating", 9) == 0) && p->mu_ea > 0)
 	{
 		pthread_mutex_lock(&p->philo->incr2);
 		p->mu_ea--;

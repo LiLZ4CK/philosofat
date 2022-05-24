@@ -6,7 +6,7 @@
 /*   By: zwalad <zwalad@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 15:42:24 by zwalad            #+#    #+#             */
-/*   Updated: 2022/05/23 16:49:07 by zwalad           ###   ########.fr       */
+/*   Updated: 2022/05/24 04:44:33 by zwalad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ long long	g_time(void)
 
 void	eat_n_sleep(t_data *p)
 {
-	if (p->go_away != 0 && p->philo->n != 0)
+	if (mutex_locker(p, 10))
 	{
 		pthread_mutex_lock(p->r_fork);
 		print_out(p, "is taking a fork");
@@ -32,8 +32,8 @@ void	eat_n_sleep(t_data *p)
 		print_out(p, "is taking a fork");
 		print_out(p, "is eating");
 		mutex_locker(p, 1);
-		uusleep(p->philo->time_to_eat);
 		mutex_locker(p, 9);
+		uusleep(p->philo->time_to_eat);
 		mutex_locker(p, 0);
 		pthread_mutex_unlock(p->l_fork);
 		pthread_mutex_unlock(p->r_fork);
@@ -48,7 +48,7 @@ void	*philo_routine(void *d)
 	t_data	*p;
 
 	p = (t_data *)d;
-	while (p->philo->n)
+	while (mutex_locker(p, 10))
 	{
 		eat_n_sleep(p);
 		if (p->l_fork == p->r_fork)
@@ -57,17 +57,17 @@ void	*philo_routine(void *d)
 	return (NULL);
 }
 
-void	*watcher(t_philo *p)
+int	watcher(t_philo *p)
 {
 	long long	tmp;
 	int			i;
 
-	while (p->n)
+	while (1)
 	{
 		i = 0;
-		pthread_mutex_lock(&p->watcher);
 		tmp = g_time() - p->start;
-		pthread_mutex_unlock(&p->watcher);
+		if (mutex_locker(p->data, 10) == 0)
+			return (0);
 		while (i < p->n_ph)
 		{	
 			pthread_mutex_lock(&p->incr);
@@ -75,14 +75,14 @@ void	*watcher(t_philo *p)
 			{
 				pthread_mutex_lock(&p->write);
 				printf("%lld ms %d died\n", g_time() - p->start, p->data[i].id);
-				p->n = 0;
-				return (NULL);
+				//p->n = 0;
+				return (0);
 			}
 			pthread_mutex_unlock(&p->incr);
 			i++;
 		}
 	}
-	return (NULL);
+	return (0);
 }
 
 int	main(int ac, char *av[])
@@ -90,12 +90,11 @@ int	main(int ac, char *av[])
 	t_philo	*p;
 	int		i;
 
+	i = 0;
 	p = malloc(sizeof(t_philo));
-	p = atoi_init(p, av, ac);
-	if (checkerrrrr(ac, p))
+	if (atoi_init(p, av, ac) || checkerrrrr(ac, p))
 		return (0);
 	p = philo_init(p, ac, av, 0);
-	i = 0;
 	p->start = g_time();
 	while (i < p->n_ph)
 	{
@@ -104,8 +103,11 @@ int	main(int ac, char *av[])
 		i++;
 	}
 	if (ac == 6)
-		return (waiter(p));
+		pthread_create(p->waiter, NULL, (void *)&waiter, p);
 	watcher(p);
 	the_free(p);
+	i = 0;
+	while (i < p->n)
+		pthread_detach(p->phlilo[i++]);
 	return (0);
 }

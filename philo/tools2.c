@@ -6,7 +6,7 @@
 /*   By: zwalad <zwalad@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/24 18:50:29 by zwalad            #+#    #+#             */
-/*   Updated: 2022/05/23 16:36:32 by zwalad           ###   ########.fr       */
+/*   Updated: 2022/05/24 04:11:56 by zwalad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	the_free(t_philo *p)
 	free(p->data);
 }
 
-int	waiter(t_philo	*p)
+void	*waiter(t_philo *p)
 {
 	int		i;
 
@@ -34,8 +34,7 @@ int	waiter(t_philo	*p)
 		}
 		pthread_mutex_unlock(&p->incr2);
 	}
-	pthread_mutex_lock(&p->write);
-	p->n = 0;
+	mutex_locker(p->data, 11);
 	return (0);
 }
 
@@ -43,11 +42,6 @@ int	checkerrrrr(int ac, t_philo *p)
 {
 	if (ac == 6 && p->me == 0)
 		return (1);
-	if (!(ac == 5 || ac == 6))
-	{
-		printf("error : wrong number of arguments\n");
-		return (1);
-	}
 	if (p->to_die <= 0 || p->time_to_eat <= 0 || p->time_to_sleep <= 0
 		|| p->n_ph <= 0)
 	{
@@ -57,11 +51,16 @@ int	checkerrrrr(int ac, t_philo *p)
 	return (0);
 }
 
-t_philo	*atoi_init(t_philo *p, char **av, int ac)
+int	atoi_init(t_philo *p, char **av, int ac)
 {
 	int	i;
 
 	i = 0;
+	if (!(ac == 5 || ac == 6))
+	{
+		printf("error : wrong number of arguments\n");
+		return (1);
+	}
 	p->ac = ac;
 	p->n_ph = ft_atoi(av[1]);
 	p->n = 1;
@@ -70,5 +69,5 @@ t_philo	*atoi_init(t_philo *p, char **av, int ac)
 	p->time_to_sleep = ft_atoi(av[4]);
 	if (ac == 6)
 		p->me = ft_atoi(av[5]);
-	return (p);
+	return (0);
 }
